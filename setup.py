@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     name='syncFiles',
     packages=find_packages(),
-    version='0.0.1',
+    version='0.0.2',
     description='Simple file synce.',
     long_description='A simple file syncer, that works with network folders, and checks sums. Windows only.',
     author='Mateusz Krzysztof Łącki',
@@ -20,5 +20,5 @@ setup(
                     'Programming Language :: Python :: 3.8'],
     license="GPL-3.0-or-later",
     install_requires=[],
-    scripts = ["bin/syncFiles.py"]
+    scripts = ["bin/syncyWincy.py"]
 )

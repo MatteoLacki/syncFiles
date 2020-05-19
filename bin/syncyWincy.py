@@ -7,7 +7,6 @@ import sys
 from syncFiles.syncFiles import age, copy, check_sums_aggree, sizes_aggree
 
 
-
 ap = argparse.ArgumentParser(description='Sync files between folders.',
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                              epilog=r"Example: python syncFiles.py C:\test\V*.raw V:\RAW_test")
