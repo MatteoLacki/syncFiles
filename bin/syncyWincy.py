@@ -16,11 +16,13 @@ ap.add_argument('source_pattern',
 ap.add_argument('target_folder', 
                 type=Path, 
                 help='Path to the folder that')
+ap.add_argument("--check_sums", help="Check sums of files before and after copying.",
+                action="store_true")
 ap.add_argument('--min_age_hours', 
-                type=float, 
+                type=float,
                 help='Minimal age in hours for the files to be copied.',
                 default=24)
-ap.add_argument('--logs_path', 
+ap.add_argument('--logs_path',
                 type=Path, 
                 help='Where to save logs.',
                 default=r"C:\Logs\sync.log")
@@ -61,12 +63,16 @@ for sf in old_files:
     try:
         if sizes_aggree(sf, tf):
             log.info(f"File sizes aggree: {sf} {tf}")
-            if check_sums_aggree(sf, tf):
-                log.info(f"Check sums aggree: {sf} {tf}")
+            if ap.check_sums:
+                if check_sums_aggree(sf, tf):
+                    log.info(f"Check sums aggree: {sf} {tf}")
+                    log.info(f"Deleting {sf}")
+                    sf.unlink()
+                else:
+                    log.error(f"Check sums differ: {sf} {tf}")
+            else:
                 log.info(f"Deleting {sf}")
                 sf.unlink()
-            else:
-                log.error(f"Check sums differ: {sf} {tf}")
         else:
             log.error(f"Files sizes differ: {sf} {tf}")
     except FileNotFoundError:

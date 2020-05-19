@@ -23,12 +23,17 @@ def copy(source, target, *file_names):
     """Copy files with Robocopy.exe.
 
     /is copies files  if they do not differ.
+    /COPY:DT /DCOPY:T preserve the date and time stamps.
+    /COPY:DAT is default.
+
+    check on: https://docs.microsoft.com/de-de/windows-server/administration/windows-commands/robocopy
     """
     assert len(file_names) > 0, "Specify file names to copy."
     cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is"
     return subprocess.run(cmd.split()).returncode
 
 
+# this takes way too much time for files on the server to get copied locally.
 def check_sum(file_path, algo=hashlib.blake2b, chunksize=8192):
     """algo (hashlib function): E..g hashlib.blake2b, hashlib.md5."""
     with open(file_path, "rb") as f:
