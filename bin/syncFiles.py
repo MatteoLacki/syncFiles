@@ -2,6 +2,7 @@
 import argparse
 import logging
 from pathlib import Path
+import sys
 
 from syncFiles.syncFiles import age, copy, check_sums_aggree, sizes_aggree
 
@@ -49,10 +50,10 @@ file_names = [f.name for f in old_files]
 if not file_names:
     err = f"no files matching pattern {ap.source_pattern}"
     log.error(err)
-    print(err)
-    break
+    sys.exit(err)
+    
 
-log.info(f"files older than {ap.min_age_hours} hours: {" ".join([str(f) for f in old_files])}")
+log.info(f"files older than {ap.min_age_hours} hours: {' '.join([str(f) for f in old_files])}")
 copy(source_folder, target_folder, *file_names)
 
 log.info("checking files and deleting wann alles stimmt.")
