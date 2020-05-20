@@ -12,9 +12,11 @@ from syncFiles.iterators import iter_chunks
 
 DEBUG = True
 
-currentIP = get_current_ip()
+# currentIP = get_current_ip()
+currentIP = '192.168.1.100'
 if DEBUG and system() == "Linux":
     currentIP = '127.0.1.1'
+
 
 
 default_logs_folder = r"C:\Logs\sync.log" if system() == 'Windows' else "~/Logs/sync.log"
@@ -106,7 +108,10 @@ if ap.check_sums:
 
 log.info(f"files older than {ap.min_age_hours} hours: {' '.join([str(f) for f in old_files])}")
 
-for fn, of in iter_chunks(zip(file_names, old_files), ap.chunks):
+
+
+for of in iter_chunks(old_files, ap.chunks):
+    fn = [f.name for f in of]
     copy(source_folder, target_folder, *fn)
     log.info("checking files and deleting wann alles stimmt.")
     for sf in of:
