@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from platform import system
 import sys
+from urllib.error import URLError
 
 from syncFiles.syncFiles import age, copy, check_sum, sizes_aggree
 from syncFiles.sender import Sender, get_current_ip
@@ -22,7 +23,8 @@ ap = argparse.ArgumentParser(description='Sync files between folders.',
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                              epilog=r"Example: python syncFiles.py C:\test\V*.raw V:\RAW_test")
 ap.add_argument('source_pattern', 
-                type=lambda p: Path(p).expanduser().resolve(),
+                # type=lambda p: Path(p).expanduser().resolve(),
+                type=Path,
                 help='Pattern of the files to sync.')
 ap.add_argument('target_folder', 
                 type=Path, 
@@ -85,8 +87,17 @@ if not file_names:
     log.error(err)
     sys.exit(err)
 
+
+check_sums = ap.check_sums
 if ap.check_sums:
     sender = Sender(ap.server_ip, ap.server_port, ap.message_encoding)
+    if not sender.connected:
+        err = f"Failed to connect to {ap.server_ip}:{ap.server_port}. Proceeding without checking sums."
+        log.error(err)
+        print()
+        print(err)
+        check_sums = False
+
 
 log.info(f"files older than {ap.min_age_hours} hours: {' '.join([str(f) for f in old_files])}")
 copy(source_folder, target_folder, *file_names)
@@ -97,7 +108,7 @@ for sf in old_files:
     try:
         if sizes_aggree(sf, tf):
             log.info(f"File sizes aggree: {sf} {tf}")
-            if ap.check_sums:
+            if check_sums:
                 s_check_sum = check_sum(sf)
                 t_check_sum = sender.get_check_sum(tf.name)
                 if s_check_sum == t_check_sum:
