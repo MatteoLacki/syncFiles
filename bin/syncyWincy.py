@@ -8,6 +8,7 @@ from urllib.error import URLError
 
 from syncFiles.syncFiles import age, copy, check_sum, sizes_aggree
 from syncFiles.sender import Sender, get_current_ip
+from syncFiles.iterators import iter_chunks
 
 DEBUG = True
 
@@ -51,6 +52,10 @@ ap.add_argument('--message_encoding',
                 type=str, 
                 help='Way the messages are encoded. Defaults to the one used on Windows.',
                 default='cp1251')
+ap.add_argument('--chunks',
+                type=int,
+                help='How many data-sets to sync at once?',
+                default=16)
 ap = ap.parse_args()
 
 
@@ -100,27 +105,28 @@ if ap.check_sums:
 
 
 log.info(f"files older than {ap.min_age_hours} hours: {' '.join([str(f) for f in old_files])}")
-copy(source_folder, target_folder, *file_names)
 
-log.info("checking files and deleting wann alles stimmt.")
-for sf in old_files:
-    tf = target_folder/sf.name
-    try:
-        if sizes_aggree(sf, tf):
-            log.info(f"File sizes aggree: {sf} {tf}")
-            if check_sums:
-                s_check_sum = check_sum(sf)
-                t_check_sum = sender.get_check_sum(tf.name)
-                if s_check_sum == t_check_sum:
-                    log.info(f"Check sums aggree: {sf} {tf}")
+for fn, of in iter_chunks(zip(file_names, old_files), ap.chunks):
+    copy(source_folder, target_folder, *fn)
+    log.info("checking files and deleting wann alles stimmt.")
+    for sf in of:
+        tf = target_folder/sf.name
+        try:
+            if sizes_aggree(sf, tf):
+                log.info(f"File sizes aggree: {sf} {tf}")
+                if check_sums:
+                    s_check_sum = check_sum(sf)
+                    t_check_sum = sender.get_check_sum(tf.name)
+                    if s_check_sum == t_check_sum:
+                        log.info(f"Check sums aggree: {sf} {tf}")
+                        log.info(f"Deleting {sf}")
+                        sf.unlink()
+                    else:
+                        log.error(f"Check sums differ: {sf} {tf}")
+                else:
                     log.info(f"Deleting {sf}")
                     sf.unlink()
-                else:
-                    log.error(f"Check sums differ: {sf} {tf}")
             else:
-                log.info(f"Deleting {sf}")
-                sf.unlink()
-        else:
-            log.error(f"Files sizes differ: {sf} {tf}")
-    except FileNotFoundError:
-        log.error(f"Target file missing: {tf}")
+                log.error(f"Files sizes differ: {sf} {tf}")
+        except FileNotFoundError:
+            log.error(f"Target file missing: {tf}")
