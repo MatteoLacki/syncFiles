@@ -5,9 +5,14 @@ import json
 import socket
 
 
+
+
 sender = Sender('0.0.0.0', '9001', 'cp1251')
 sender.connected
 
 sender = Sender('192.168.1.100', '9001', 'cp1251')
 sender.connected
+
+sender.get_check_sum('V200310_10.raw')
+
 
