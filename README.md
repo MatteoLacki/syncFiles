@@ -1,5 +1,6 @@
 # Rationale
-Move files on windows.
+Move files from one place to another (e.g. windows network folder).
+Then, compare the files for sizes and check sums and log everything.
 
 
 # Installation
@@ -19,6 +20,6 @@ For help, run:
 	python3 syncFiles -h
 ```
 
-# Nice things
-All copy tasks are logged (by default in C:\Logs\sync.log).
-After copying, files are compared for sizes and check sums.
+# Logging
+All copy tasks are logged, by default in C:\Logs\sync.log
+

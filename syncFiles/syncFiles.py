@@ -1,26 +1,34 @@
-"""All this is meant to work only on Windows."""
 import os
 from pathlib import Path
 import subprocess
 import time
 import hashlib
+from platform import system
+import shutil
 
 
 def age(file_path, unit='h'):
-    assert unit in ('s','h')
+    """Get file age.
+
+    Args:
+        file_path (str): Path to file.
+        unit (str): 's' for seconds, 'm' for minutes, 'h' for hours, 'd' for days."""
     age_in_s = time.time() - os.path.getctime(file_path)
-    if unit == 's':
-        return age_in_s
-    else:
-        return age_in_s/3600
+    return {'s': age_in_s,
+            'm': age_in_s/60,
+            'h': age_in_s/3600,
+            'd': age_in_s/86400 }[unit]
 
 
 def get_size_in_kilobytes(file_path):
+    """Get file size in kilobytes."""
     return os.path.getsize(file_path)
 
 
 def copy(source, target, *file_names):
-    """Copy files with Robocopy.exe.
+    """Copy files.
+    
+    On Windows, use robocopy.
 
     /is copies files  if they do not differ.
     /COPY:DT /DCOPY:T preserve the date and time stamps.
@@ -29,9 +37,14 @@ def copy(source, target, *file_names):
     check on: https://docs.microsoft.com/de-de/windows-server/administration/windows-commands/robocopy
     """
     assert len(file_names) > 0, "Specify file names to copy."
-    cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is"
-    return subprocess.run(cmd.split()).returncode
-
+    OS = system()
+    if OS == 'Windows':
+        cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is"
+        return subprocess.run(cmd.split()).returncode
+    else:
+        for fn in file_names:
+            shutil.copy2(str(source/fn), str(target/fn))
+        return 1
 
 # this takes way too much time for files on the server to get copied locally.
 def check_sum(file_path, algo=hashlib.blake2b, chunksize=8192):
@@ -51,4 +64,5 @@ def check_sums_aggree(file_name_0, file_name_1, **kwds):
 
 def sizes_aggree(file_name_0, file_name_1):
     return get_size_in_kilobytes(file_name_0) == get_size_in_kilobytes(file_name_1)
+
 

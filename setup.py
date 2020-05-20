@@ -19,6 +19,7 @@ setup(
                     'Programming Language :: Python :: 3.7',
                     'Programming Language :: Python :: 3.8'],
     license="GPL-3.0-or-later",
-    install_requires=[],
-    scripts = ["bin/syncyWincy.py"]
+    install_requires=["flask"],
+    scripts = ["bin/syncyWincy.py",
+               "bin/checkSummer.py"]
 )
