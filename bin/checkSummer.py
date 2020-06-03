@@ -42,7 +42,9 @@ def get_project_id():
         print(ap.storage_folder_path)
         relative_path, check_sum_kwds = request.get_json()
         local_abs_file_path = ap.storage_folder_path/relative_path
+        print(local_abs_file_path)
         cs = check_sum(local_abs_file_path, **check_sum_kwds)
+        print(cs)
         return jsonify(cs)
 
 
