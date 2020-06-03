@@ -1,6 +1,7 @@
 """All this is meant to work only on Windows."""
 import argparse
 import logging
+import os
 from pathlib import Path
 from platform import system
 import sys
@@ -66,9 +67,13 @@ ap.logs_path.parent.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(filename=ap.logs_path,
                     level=logging.INFO,
                     format='%(asctime)s:%(name)s:%(levelname)s:%(message)s:')
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+logging.getLogger('').addHandler(console)
 log = logging.getLogger('syncFiles.py')
 
 
+log.info(f"LOGGED IN AS USER: {os.getlogin()}")
 log.info("copying files")
 log.info("FROM: " + str(ap.source_pattern))
 log.info("TO: " + str(ap.target_folder))
