@@ -1,1 +1,1 @@
-python C:\Projects\syncFiles\bin\checkSummer.py E:\net\verleihnix_rawdata\RAW
+python C:\Projects\syncFiles\bin\checkSummer.py E:\net\verleihnix_rawdata\RAW_test
