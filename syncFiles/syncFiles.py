@@ -30,7 +30,9 @@ def copy(source, target, *file_names):
     
     On Windows, use robocopy.
 
-    /is copies files  if they do not differ.
+    /is copies same files:
+    /it copies tweaked files.
+
     /COPY:DT /DCOPY:T preserve the date and time stamps.
     /COPY:DAT is default.
 
@@ -39,7 +41,7 @@ def copy(source, target, *file_names):
     assert len(file_names) > 0, "Specify file names to copy."
     OS = system()
     if OS == 'Windows':
-        cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is"
+        cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is /it /r:10 /w:10"
         return subprocess.run(cmd.split()).returncode
     else:
         for fn in file_names:

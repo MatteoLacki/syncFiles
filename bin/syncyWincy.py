@@ -121,6 +121,7 @@ for of in iter_chunks(old_files, ap.chunks):
     log.info("checking files and deleting wann alles stimmt.")
     for sf in of:
         tf = target_folder/sf.name
+        ok_to_delete = False
         try:
             if sizes_aggree(sf, tf):
                 log.info(f"File sizes aggree: {sf} {tf}")
@@ -129,13 +130,19 @@ for of in iter_chunks(old_files, ap.chunks):
                     t_check_sum = sender.get_check_sum(tf.name)
                     if s_check_sum == t_check_sum:
                         log.info(f"Check sums aggree: {sf} {tf}")
-                        log.info(f"Deleting {sf}")
-                        sf.unlink()
+                        ok_to_delete = True
                     else:
                         log.error(f"Check sums differ: {sf} {tf}")
                 else:
+                    ok_to_delete = True
+                if ok_to_delete:
                     log.info(f"Deleting {sf}")
-                    sf.unlink()
+                    try:
+                        sf.unlink()
+                    except PermissionError as e:
+                        log.error(repr(e))
+                    if sf.exists():
+                        log.error(f"Could not delete: {sf}. Will repeat it in 24h.")
             else:
                 log.error(f"Files sizes differ: {sf} {tf}")
         except FileNotFoundError:
