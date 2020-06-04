@@ -147,3 +147,5 @@ for of in iter_chunks(old_files, ap.chunks):
                 log.error(f"Files sizes differ: {sf} {tf}")
         except FileNotFoundError:
             log.error(f"Target file missing: {tf}")
+
+log.info('syncyWincy finished.')
