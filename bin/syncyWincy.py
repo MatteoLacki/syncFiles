@@ -84,20 +84,17 @@ target_folder = ap.target_folder
 source_folder = ap.source_pattern.parent
 pattern = ap.source_pattern.name 
 
-if DEBUG:
-    print(ap.logs_path)
-    print(ap.source_pattern)
-    print(ap.min_age_hours)
-    for f in source_folder.glob(pattern):
-        print(f"File {f} is {age(f,'h')} h old.")
+
+for f in source_folder.glob(pattern):
+    log.info(f"File {f} is {age(f,'h')} h old.")
 
 
 old_files = [f for f in source_folder.glob(pattern) if age(f, 'h') >= ap.min_age_hours]
-file_names = [f.name for f in old_files]
-if not file_names:
-    err = f"no files matching pattern {ap.source_pattern}"
-    log.error(err)
-    sys.exit(err)
+# file_names = [f.name for f in old_files]
+# if not file_names:
+#     err = f"no files matching pattern {ap.source_pattern}"
+#     log.error(err)
+#     sys.exit(err)
 
 
 check_sums = ap.check_sums
@@ -113,8 +110,10 @@ if ap.check_sums:
 
 log.info(f"files older than {ap.min_age_hours} hours: {' '.join([str(f) for f in old_files])}")
 
-
-
+# logic:
+# all the files are set to copy.
+# those already copied are skipped by robocopy
+# if they are older than 24h and they have the same sizes and they have the same check sums, they will be deleted.
 for of in iter_chunks(old_files, ap.chunks):
     fn = [f.name for f in of]
     copy(source_folder, target_folder, *fn)

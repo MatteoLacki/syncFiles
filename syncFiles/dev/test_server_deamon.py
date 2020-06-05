@@ -17,6 +17,10 @@ sender.connected
 %%time
 remote_check_sum = sender.get_check_sum('V200310_10.raw')
 
+# testin if one can calculate a checksum of a file open on another computer.
+remote_check_sum = sender.get_check_sum('V200604_08.raw') # OK
+
+
 local_V200310_10 = Path(r"C:\Projects\cp\real")/'V200310_10.raw'
 
 %%time
