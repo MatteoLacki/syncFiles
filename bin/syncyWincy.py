@@ -136,5 +136,7 @@ else:
                         log.error(f"Files sizes differ: {sf} {tf}")
                 except FileNotFoundError:
                     log.error(f"Target file missing: {tf}")
+            else:
+                log.info(f"File {sf} is too young to delete.")
 
 log.info('syncyWincy finished.')
