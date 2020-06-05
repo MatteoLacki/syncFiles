@@ -79,13 +79,8 @@ console.setLevel(logging.INFO)
 logging.getLogger('').addHandler(console)
 log = logging.getLogger('syncFiles.py')
 
-
 log.info(f"LOGGED IN AS USER: {os.getlogin()}")
-log.info("copying files")
-log.info("FROM: " + str(ap.source_pattern))
-log.info("TO: " + str(ap.target_folder))
-log.info("How old are files in hours?: " + str(ap.target_folder))
-
+log.info(f"copy from: {ap.source_pattern} to: {ap.target_folder}")
 
 target_folder = ap.target_folder
 source_folder = ap.source_pattern.parent
@@ -96,7 +91,7 @@ all_files = list(source_folder.glob(pattern))
 if not all_files:
     log.error(f"no files matching pattern {ap.source_pattern}")
 else:
-    log.info(f"Will try to copy: {' '.join(all_files)}")
+    log.info(f"Will try to copy: {' '.join([f.name for f in all_files])}")
 
     check_sums = ap.check_sums
     if ap.check_sums:
