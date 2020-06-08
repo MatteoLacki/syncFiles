@@ -42,9 +42,13 @@ ap.add_argument('target_folder',
                 help='Path to the folder that')
 ap.add_argument("--check_sums", help="Check sums of files before and after copying.",
                 action="store_true")
-ap.add_argument('--min_age_hours', 
+ap.add_argument('--min_copy_hours', 
                 type=float,
                 help='Minimal age in hours for the files to be copied.',
+                default=4)
+ap.add_argument('--min_delete_hours', 
+                type=float,
+                help='Minimal age in hours for the files to be deleted.',
                 default=24)
 ap.add_argument('--logs_path',
                 type=lambda p: Path(p).expanduser().resolve(), 
@@ -86,12 +90,12 @@ target_folder = ap.target_folder
 source_folder = ap.source_pattern.parent
 pattern = ap.source_pattern.name 
 
-all_files = list(source_folder.glob(pattern))
+all_files_to_copy = [f for f in source_folder.glob(pattern) if age(f, 'h') >= ap.min_copy_hours]
 
-if not all_files:
-    log.error(f"no files matching pattern {ap.source_pattern}")
+if not all_files_to_copy:
+    log.error(f"no files matching pattern {ap.source_pattern} that are older than {ap.min_copy_hours}h.")
 else:
-    log.info(f"Will try to copy: {' '.join([f.name for f in all_files])}")
+    log.info(f"Will try to copy: {' '.join([f.name for f in all_files_to_copy])}")
 
     check_sums = ap.check_sums
     if ap.check_sums:
@@ -107,8 +111,8 @@ else:
         for sf in files_chunk:
             file_age = age(sf, 'h')
             log.info(f"File {sf} is {file_age}h old.")
-            if file_age >= ap.min_age_hours:
-                log.info(f"File {sf} is older than {ap.min_age_hours}h")
+            if file_age >= ap.min_delete_hours:
+                log.info(f"File {sf} is older than {ap.min_delete_hours}h")
                 tf = target_folder/sf.name
                 ok_to_delete = False
                 try:
