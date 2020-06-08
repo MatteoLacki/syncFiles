@@ -19,7 +19,7 @@ from syncFiles.syncFiles import age, copy, check_sum, sizes_aggree
 from syncFiles.sender import Sender, get_current_ip
 from syncFiles.iterators import iter_chunks
 
-DEBUG = True
+DEBUG = False
 
 # currentIP = get_current_ip()
 currentIP = '192.168.1.100'
@@ -93,7 +93,7 @@ pattern = ap.source_pattern.name
 all_files_to_copy = [f for f in source_folder.glob(pattern) if age(f, 'h') >= ap.min_copy_hours]
 
 if not all_files_to_copy:
-    log.error(f"no files matching pattern {ap.source_pattern} that are older than {ap.min_copy_hours}h.")
+    log.error(f"No files matching pattern {ap.source_pattern} that are older than {ap.min_copy_hours}h.")
 else:
     log.info(f"Will try to copy: {' '.join([f.name for f in all_files_to_copy])}")
 
