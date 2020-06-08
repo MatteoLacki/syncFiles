@@ -95,7 +95,8 @@ all_files_to_copy = [f for f in source_folder.glob(pattern) if age(f, 'h') >= ap
 if not all_files_to_copy:
     log.error(f"No files matching pattern {ap.source_pattern} that are older than {ap.min_copy_hours}h.")
 else:
-    log.info(f"Will try to copy: {' '.join([f.name for f in all_files_to_copy])}")
+    names_with_age = [f.name+f'that is {age(f,"h")}h old' for f in all_files_to_copy]
+    log.info(f"Will try to copy: {' '.join(names_with_age)}")
 
     check_sums = ap.check_sums
     if ap.check_sums:
@@ -105,7 +106,7 @@ else:
             log.error(err)
             check_sums = False
 
-    for files_chunk in iter_chunks(source_folder.glob(pattern), ap.chunks):
+    for files_chunk in iter_chunks(all_files_to_copy, ap.chunks):
         copy(source_folder, target_folder, *[f.name for f in files_chunk])
         log.info("checking files and deleting wann alles stimmt.")
         for sf in files_chunk:
