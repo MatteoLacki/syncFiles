@@ -25,30 +25,36 @@ def get_size_in_kilobytes(file_path):
     return os.path.getsize(file_path)
 
 
-def copy(source, target, *file_names):
+def robocopy(source, target, file_name_list=[], params='/is /it /r:10 /w:10 /mt /E /z'):
     """Copy files.
     
-    On Windows, use robocopy.
-
     /is copies same files:
     /it copies tweaked files.
+    /mt multithreading
+    /E include subdirectories.
 
     /COPY:DT /DCOPY:T preserve the date and time stamps.
     /COPY:DAT is default.
 
     check on: https://docs.microsoft.com/de-de/windows-server/administration/windows-commands/robocopy
     """
-    assert len(file_names) > 0, "Specify file names to copy."
-    OS = system()
-    if OS == 'Windows':
-        cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_names)} /is /it /r:10 /w:10"
-        return subprocess.run(cmd.split()).returncode
-    else:
-        for fn in file_names:
-            shutil.copy2(str(source/fn), str(target/fn))
-        return 1
+    cmd = f"robocopy {str(source)} {str(target)} {' '.join(file_name_list)} {params}"
+    return subprocess.run(cmd.split()).returncode
 
-# this takes way too much time for files on the server to get copied locally.
+
+def linuxcopy(source, target, file_name_list):
+    if file_name_list:
+        for fn in file_name_list:
+            shutil.copy2(str(source/fn), str(target/fn))
+    else:
+        shutil.copytree(str(source), str(target))
+    return 1
+
+
+def copy(source, target, file_name_list=[], params='/is /it /r:10 /w:10 /mt /E'):
+    return robocopy(source, target, file_name_list, params) if system()=='Windows' else linuxcopy(source, target, file_name_list)
+
+
 def check_sum(file_path, algo=hashlib.blake2b, chunksize=8192):
     """algo (hashlib function): E..g hashlib.blake2b, hashlib.md5."""
     with open(file_path, "rb") as f:
