@@ -18,6 +18,17 @@ class Sender(object):
         self.port = port
         self.encoding = encoding
         self.ip = socket.gethostbyname(socket.gethostname())
+        self.connected = self.greet()
+
+    def greet(self):
+        url = f"http://{self.host}:{self.port}/"
+        request = Request(url)
+        request.add_header('Content-Type', 'application/json; charset=utf-8')
+        try:
+            urlopen(request)
+            return True
+        except URLError as e:
+            return False
 
     def __sock(self, route, message=None):
         url = f"http://{self.host}:{self.port}/{route}"

@@ -7,7 +7,7 @@ from platform import system as OS
 from syncFiles.syncFiles import check_sum
 
 
-DEBUG = True
+DEBUG = False
 currentIP = socket.gethostbyname(socket.gethostname())
 
 
@@ -33,7 +33,7 @@ app  = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'checkSummer operating.'
+    return f'checkSummer operating.\nIP: {ap.host} PORT: {ap.port}\nDATA FOLDER:{ap.storage_folder_path}'
 
 @app.route('/check', methods=['POST'])
 def get_project_id():
@@ -42,7 +42,9 @@ def get_project_id():
         print(ap.storage_folder_path)
         relative_path, check_sum_kwds = request.get_json()
         local_abs_file_path = ap.storage_folder_path/relative_path
+        print(local_abs_file_path)
         cs = check_sum(local_abs_file_path, **check_sum_kwds)
+        print(cs)
         return jsonify(cs)
 
 
