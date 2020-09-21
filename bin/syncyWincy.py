@@ -19,14 +19,11 @@ from syncFiles.syncFiles import age, copy, check_sum, sizes_aggree
 from syncFiles.sender import Sender, get_current_ip
 from syncFiles.iterators import iter_chunks
 
-DEBUG = False
+DEBUG = True
 
 # currentIP = get_current_ip()
-currentIP = '192.168.1.100'
-if DEBUG and system() == "Linux":
-    currentIP = '127.0.1.1'
-
-
+server_ip = '192.168.1.100'
+currentIP = '127.0.1.1' if (DEBUG and system() == "Linux") else server_ip
 
 default_logs_folder = r"C:\Logs\sync.log" if system() == 'Windows' else "~/Logs/sync.log"
 
