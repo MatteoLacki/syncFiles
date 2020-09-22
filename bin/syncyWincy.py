@@ -107,31 +107,28 @@ def iter_group_paths_age(paths):
         if p.is_file():
             yield group, [p], get_age(p)
 
+
 for group, paths, age in iter_group_n_age(ap.paths):
-    # check if qualifies to copy
     if age < ap.min_copy_hours:
-        log.info(f"Age of group {group} is less than {ap.min_copy_hours}h: not copying.")
-        continue
-    # tryint to copy a given number of times
-    copy_trial = 0
-    while paths_to_copy and copy_trial < ap.max_copy_trials:
-        copy(ap.source, ap.target, paths_to_copy)
-        paths_to_copy = [p for p in paths_to_copy if not properly_copied(p)]
-        copy_trial += 1
-    if copy_trial == ap.max_copy_trials:
-        log.error(f"Could not copy: {' '.join(paths_to_copy)}, even after trying {ap.max_copy_trials} times: repeat in 24h.")
-        continue
-    # check if qualifies to delete
-    if age < ap.min_delete_hours:
-        log.info(f"Age of group {group} is less than {ap.min_delete_hours}h: not deleting.")
-        continue
-    # deleting
-    try:
-        for p in paths: p.unlink()
-    except Exception as e:
-        log.error(f"{repr(e)}\nGroup {group} not copied.")
-    else:
-        log.info(f"Group {group} copied successfully.")
+        log.info(f"Age[{group}] = {age} < {ap.min_copy_hours}h: not copying.")
+    else: # trying to perform copy a given number of times
+        copy_trial = 0
+        while paths_to_copy and copy_trial < ap.max_copy_trials:
+            copy(ap.source, ap.target, paths_to_copy)
+            paths_to_copy = [p for p in paths_to_copy if not properly_copied(p)]
+            copy_trial += 1
+        if copy_trial == ap.max_copy_trials:
+            log.error(f"Could not copy: {' '.join(paths_to_copy)}. Tried {ap.max_copy_trials} times.")
+        else:# check if qualifies to delete
+            if age < ap.min_delete_hours:
+                log.info(f"Age[{group}] = {age} < {ap.min_delete_hours}h: not deleting.")
+            else:# deleting
+                try:
+                    for p in paths: p.unlink()
+                except Exception as e:
+                    log.error(f"{repr(e)}\n{group} not copied.")
+                else:
+                    log.info(f"{group} copied successfully.")
 
 
 log.info('syncyWincy finished.')
