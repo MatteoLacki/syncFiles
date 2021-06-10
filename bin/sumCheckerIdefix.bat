@@ -1,0 +1,1 @@
+python C:\Projects\syncFiles\bin\checkSummer.py E:\net\idefix_rawdata\RAW_OT --port 9003
