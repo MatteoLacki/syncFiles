@@ -7,10 +7,8 @@ from platform import system as OS
 from syncFiles.syncFiles import check_sum
 
 
-DEBUG = False
+DEBUG = True
 currentIP = socket.gethostbyname(socket.gethostname())
-
-
 
 ap = argparse.ArgumentParser(description='Run a deamon that checks sums of sent files.',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -29,8 +27,6 @@ ap = ap.parse_args()
 app  = Flask(__name__)
 
 
-
-
 @app.route('/')
 def index():
     return f'checkSummer operating.\nIP: {ap.host} PORT: {ap.port}\nDATA FOLDER:{ap.storage_folder_path}'
@@ -46,7 +42,6 @@ def get_project_id():
         cs = check_sum(local_abs_file_path, **check_sum_kwds)
         print(cs)
         return jsonify(cs)
-
 
 
 if __name__ == '__main__':
